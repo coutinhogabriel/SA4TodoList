@@ -1,5 +1,4 @@
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -79,80 +78,53 @@ public class TodoList extends JFrame {
 
         // Adiciona listeners aos botões
         addButton.addActionListener(e -> {
-            //chama o metodo addTask
             addTask();
-
         });
 
         deleteButton.addActionListener(e -> {
-            // Quando o botão "Excluir" é pressionado
-             //chama o metodo deleteTask
             deleteTask();
-
         });
 
         markDoneButton.addActionListener(e -> {
-            // Quando o botão "Concluir" é pressionado
-             //chama o metodo markTaskDone
             markTaskDone();
-
         });
 
         filterComboBox.addItemListener(e -> {
-            // Quando a seleção do ComboBox é alterada
-             //chama o metodo filterTasks
             filterTasks();
-
         });
 
         clearCompletedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Quando o botão "Limpar Concluídas" é pressionado
-                //chama o metodo clearCompletedTasks
                 clearCompletedTasks();
             }
         });
 
-        // Adiciona um KeyListener para a lista de tarefas para excluir com a tecla
-        // "DEL"
+        // Adiciona um KeyListener para a lista de tarefas para excluir com a tecla "DEL"
         taskInputField.addKeyListener(new KeyAdapter() {
-
             @Override
             public void keyPressed(KeyEvent e) {
                 int key = e.getKeyCode();
                 if (key == KeyEvent.VK_ENTER) {
-                    // Quando a tecla "Enter" é pressionada na lista
-
-                    // Adiciona a tarefa na lista e atualiza a interface
-                    //chama o metodo addTask
                     addTask();
                 }
             }
-
         });
+
         taskList.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 int key = e.getKeyCode();
                 if (key == KeyEvent.VK_DELETE) {
-                    // Quando a tecla "DEL" é pressionada na lista
-
-                    // Remove a tarefa da lista e atualiza a interface
-                     //chama o metodo deleteTask
                     deleteTask();
                 }
-
             }
-
         });
 
         // Adiciona um WindowListener para confirmar o fechamento da aplicação
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                // Quando a janela está prestes a ser fechada
-                //chama o metodo fecharJanela
                 fecharJanela();
             }
         });
@@ -161,39 +133,33 @@ public class TodoList extends JFrame {
         taskList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
                 if (e.getClickCount() == 2) {
-                     //chama o metodo editTask
                     editTask();
                 }
             }
         });
-        // Adiciona um AdjustmentListener para mudar o tamanho do frame e dos
-        // componentes
+
+        // Adiciona um AdjustmentListener para mudar o tamanho do frame e dos componentes
         scrollBar.addAdjustmentListener(new AdjustmentListener() {
             @Override
             public void adjustmentValueChanged(AdjustmentEvent e) {
-                 //chama o metodo  TamanhoFrame
                 TamanhoFrame();
             }
-
         });
 
         run();
-
     }
 
     // Função para adicionar uma nova tarefa à lista
     private void addTask() {
-        // Obtém a descrição da tarefa do campo de entrada
         String taskDescription = taskInputField.getText().trim();
         if (!taskDescription.isEmpty()) {
-            // Cria uma nova tarefa, adiciona à lista e atualiza a interface
             Task newTask = new Task(taskDescription);
             tasks.add(newTask);
             updateTaskList();
-            // Limpa o campo de entrada
             taskInputField.setText("");
+        } else {
+            JOptionPane.showMessageDialog(this, "Por favor, forneça uma descrição para a tarefa.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -201,14 +167,13 @@ public class TodoList extends JFrame {
     private void deleteTask() {
         int selectedIndex = taskList.getSelectedIndex();
         if (selectedIndex >= 0 && selectedIndex < tasks.size()) {
-            // Exibe uma caixa de diálogo de confirmação
-            int option = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir?", "Confirmação",
-                    JOptionPane.YES_NO_OPTION);
+            int option = JOptionPane.showConfirmDialog(null, "Deseja realmente excluir?", "Confirmação", JOptionPane.YES_NO_OPTION);
             if (option == JOptionPane.YES_OPTION) {
-                // Remove a tarefa da lista e atualiza a interface
                 tasks.remove(selectedIndex);
                 updateTaskList();
             }
+        } else {
+            JOptionPane.showMessageDialog(this, "Por favor, selecione uma tarefa para excluir.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -216,7 +181,6 @@ public class TodoList extends JFrame {
     private void markTaskDone() {
         int selectedIndex = taskList.getSelectedIndex();
         if (selectedIndex >= 0 && selectedIndex < tasks.size()) {
-            // Marca a tarefa como concluída e atualiza a interface
             Task task = tasks.get(selectedIndex);
             task.setDone(true);
             updateTaskList();
@@ -225,11 +189,8 @@ public class TodoList extends JFrame {
 
     // Função para filtrar as tarefas com base na seleção do ComboBox
     private void filterTasks() {
-        // Obtém a seleção do ComboBox
         String filter = (String) filterComboBox.getSelectedItem();
-        // Limpa o modelo da lista
         listModel.clear();
-        // Adiciona as tarefas filtradas ao modelo
         for (Task task : tasks) {
             if (filter.equals("Todas") || (filter.equals("Ativas") && !task.isDone())
                     || (filter.equals("Concluídas") && task.isDone())) {
@@ -240,49 +201,37 @@ public class TodoList extends JFrame {
 
     // Função para limpar todas as tarefas concluídas da lista
     private void clearCompletedTasks() {
-        // Cria uma lista de tarefas concluídas
         List<Task> completedTasks = new ArrayList<>();
         for (Task task : tasks) {
             if (task.isDone()) {
                 completedTasks.add(task);
             }
         }
-        // Remove as tarefas concluídas da lista e atualiza a interface
         tasks.removeAll(completedTasks);
         updateTaskList();
     }
 
     // Função para atualizar a lista de tarefas na interface gráfica
     private void updateTaskList() {
-        // Limpa o modelo da lista
         listModel.clear();
-        // Adiciona as tarefas atualizadas ao modelo
         for (Task task : tasks) {
             listModel.addElement(task.getDescription() + (task.isDone() ? " (Concluída)" : ""));
         }
     }
 
     private void fecharJanela() {
-        int option = JOptionPane.showConfirmDialog(null, "Deseja realmente fechar a aplicação?", "Confirmação",
-                JOptionPane.YES_NO_OPTION);
+        int option = JOptionPane.showConfirmDialog(null, "Deseja realmente fechar a aplicação?", "Confirmação", JOptionPane.YES_NO_OPTION);
         if (option == JOptionPane.YES_OPTION) {
-            // Fecha a aplicação
             System.exit(0);
         }
     }
 
-    // Função para editar a tarefa selecionada
     private void editTask() {
         int selectedIndex = taskList.getSelectedIndex();
         if (selectedIndex >= 0 && selectedIndex < tasks.size()) {
-            // Obtém a descrição atual da tarefa
             String currentDescription = tasks.get(selectedIndex).getDescription();
-
-            // Pede ao usuário para editar a descrição
             String editedDescription = (String) JOptionPane.showInputDialog(null, "Editar Tarefa", "Edição de Tarefa",
                     JOptionPane.PLAIN_MESSAGE, null, null, currentDescription);
-
-            // Atualiza a descrição se o usuário não cancelou
             if (editedDescription != null && !editedDescription.isEmpty()) {
                 tasks.get(selectedIndex).setDescription(editedDescription);
                 updateTaskList();
@@ -292,27 +241,18 @@ public class TodoList extends JFrame {
 
     private void TamanhoFrame() {
         int valorScrollBar = scrollBar.getValue();
-
         int largura = 800;
         int altura = 300;
-
         int componentesAlt = 30;
         int componenteslar = 130;
 
-        // Atualiza as dimensões dos botões
         addButton.setPreferredSize(new Dimension(componenteslar + valorScrollBar, componentesAlt + valorScrollBar));
         deleteButton.setPreferredSize(new Dimension(componenteslar + valorScrollBar, componentesAlt + valorScrollBar));
-        markDoneButton
-                .setPreferredSize(new Dimension(componenteslar + valorScrollBar, componentesAlt + valorScrollBar));
-        clearCompletedButton
-                .setPreferredSize(new Dimension(componenteslar + valorScrollBar, componentesAlt + valorScrollBar));
-        filterComboBox
-                .setPreferredSize(new Dimension(componenteslar + valorScrollBar, componentesAlt + valorScrollBar));
+        markDoneButton.setPreferredSize(new Dimension(componenteslar + valorScrollBar, componentesAlt + valorScrollBar));
+        clearCompletedButton.setPreferredSize(new Dimension(componenteslar + valorScrollBar, componentesAlt + valorScrollBar));
+        filterComboBox.setPreferredSize(new Dimension(componenteslar + valorScrollBar, componentesAlt + valorScrollBar));
 
-        // Atualiza a dimensão da label
-        label.setPreferredSize(new Dimension(componenteslar, componentesAlt));
-        // Atualiza o tamanho da fonte dos botões
-        Font newFont = new Font("Arial", Font.PLAIN, 11 + valorScrollBar); // Altere o tamanho da fonte conforme o ScrollBar
+        Font newFont = new Font("Arial", Font.PLAIN, 11 + valorScrollBar);
         if (newFont.getSize() <= 22) {
             addButton.setFont(newFont);
             deleteButton.setFont(newFont);
@@ -325,15 +265,22 @@ public class TodoList extends JFrame {
 
         label.setText("Tamanho: " + (valorScrollBar + 100) + "%");
 
-        // Define as novas dimensões para o painel principal
         mainPanel.setPreferredSize(new Dimension(largura + (valorScrollBar * 9), altura + (valorScrollBar * 4)));
-        mainPanel.revalidate(); // Revalida o layout para aplicar as alterações
+        mainPanel.revalidate();
         pack();
     }
 
-    // Função para exibir a janela principal
     public void run() {
         this.setVisible(true);
     }
 
+   public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new TodoList();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
 }
